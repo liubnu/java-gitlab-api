@@ -15,6 +15,9 @@ public class GitlabProjectHook {
     @JsonProperty("push_events")
     private boolean pushEvents;
 
+    @JsonProperty("tag_push_events")
+    private boolean tagPushEvents;
+
     @JsonProperty("issues_events")
     private boolean issueEvents;
 
@@ -57,6 +60,14 @@ public class GitlabProjectHook {
 
     public void setPushEvents(boolean pushEvents) {
         this.pushEvents = pushEvents;
+    }
+
+    public boolean getTagPushEvents() {
+        return tagPushEvents;
+    }
+
+    public void setTagPushEvents(boolean tagPushEvents) {
+        this.tagPushEvents = tagPushEvents;
     }
 
     public boolean getIssueEvents() {

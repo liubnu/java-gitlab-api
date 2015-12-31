@@ -932,6 +932,17 @@ public class GitlabAPI {
         return retrieve().to(tailUrl, GitlabBranch.class);
     }
 
+    public GitlabBranch getBranch(Serializable projectId, String branchName) throws IOException {
+        String tailUrl = GitlabProject.URL + "/" + projectId + GitlabBranch.URL + branchName;
+        return retrieve().to(tailUrl, GitlabBranch.class);
+    }
+
+    public List<GitlabTag> getTags(Serializable projectId) throws IOException {
+        String tailUrl = GitlabProject.URL + "/" + projectId + GitlabTag.URL;
+        GitlabTag[] tags = retrieve().to(tailUrl, GitlabTag[].class);
+        return Arrays.asList(tags);
+    }
+
     public void protectBranch(GitlabProject project, String branchName) throws IOException {
         String tailUrl = GitlabProject.URL + "/" + project.getId() + GitlabBranch.URL + branchName + "/protect";
         retrieve().method("PUT").to(tailUrl, Void.class);
@@ -968,12 +979,13 @@ public class GitlabAPI {
         return dispatch().to(tailUrl, GitlabProjectHook.class);
     }
 
-    public GitlabProjectHook addProjectHook(Serializable projectId, String url, boolean pushEvents, boolean issuesEvents, boolean mergeRequestEvents, boolean sslVerification) throws IOException {
+    public GitlabProjectHook addProjectHook(Serializable projectId, String url, boolean pushEvents, boolean tagPushEvents, boolean issuesEvents, boolean mergeRequestEvents, boolean sslVerification) throws IOException {
         String tailUrl = GitlabProject.URL + "/" + sanitizeProjectId(projectId) + GitlabProjectHook.URL;
 
         return dispatch()
                 .with("url", url)
                 .with("push_events", pushEvents ? "true" : "false")
+                .with("tag_push_events", tagPushEvents ? "true" : "false")
                 .with("issues_events", issuesEvents ? "true" : "false")
                 .with("merge_requests_events", mergeRequestEvents ? "true" : "false")
                 .with("enable_ssl_verification", sslVerification ? "true" : "false")
