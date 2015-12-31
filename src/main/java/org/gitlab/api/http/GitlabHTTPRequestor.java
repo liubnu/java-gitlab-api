@@ -13,10 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
+import java.net.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -191,6 +188,7 @@ public class GitlabHTTPRequestor {
                 }
             }
 
+            @Override
             public boolean hasNext() {
                 fetch();
                 if (next != null && next.getClass().isArray()) {
@@ -201,6 +199,7 @@ public class GitlabHTTPRequestor {
                 }
             }
 
+            @Override
             public T next() {
                 fetch();
                 T record = next;
@@ -213,6 +212,7 @@ public class GitlabHTTPRequestor {
                 return record;
             }
 
+            @Override
             public void remove() {
                 throw new UnsupportedOperationException();
             }
@@ -296,6 +296,11 @@ public class GitlabHTTPRequestor {
             connection.setRequestProperty(tokenType.getTokenHeaderName(), String.format(tokenType.getTokenHeaderFormat(), apiToken));
         }
 
+        final int requestTimeout = root.getRequestTimeout();
+        if (requestTimeout > 0) {
+            connection.setReadTimeout(requestTimeout);
+        }
+
         try {
             connection.setRequestMethod(method);
         } catch (ProtocolException e) {
@@ -351,6 +356,9 @@ public class GitlabHTTPRequestor {
         if (e instanceof FileNotFoundException) {
             throw e;    // pass through 404 Not Found to allow the caller to handle it intelligently
         }
+        if (e instanceof SocketTimeoutException && root.getRequestTimeout() > 0) {
+            throw e;
+        }
 
         InputStream es = wrapStream(connection, connection.getErrorStream());
         try {
@@ -367,14 +375,17 @@ public class GitlabHTTPRequestor {
     private void ignoreCertificateErrors() {
         TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {
+                    @Override
                     public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                         return null;
                     }
 
+                    @Override
                     public void checkClientTrusted(
                             java.security.cert.X509Certificate[] certs, String authType) {
                     }
 
+                    @Override
                     public void checkServerTrusted(
                             java.security.cert.X509Certificate[] certs, String authType) {
                     }
