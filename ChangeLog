@@ -1,0 +1,13 @@
+commit 86e0110667b7b83e7e19b5fd7923ad9d8086bc30
+Author: aaa <aaa@bbb.com>
+Date:   Fri Nov 13 12:23:27 2015 +0800
+
+    add mvc interface
+
+commit dc1c39a83d44435ab3df1eafcaa624889e45b2f2
+Author: aaa <aaa@bbb.com>
+Date:   Tue Nov 10 11:47:50 2015 +0800
+
+    fix compile bug
+
+
